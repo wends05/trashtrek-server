@@ -1,4 +1,4 @@
 fastapi
 pydantic
-pymongo
+pymongo==4.14.1
 python-dotenv

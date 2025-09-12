@@ -1,8 +1,19 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from player.routes import player_router
 from fastapi.middleware.cors import CORSMiddleware
+from db import client
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        await client.admin.command("ping")
+    except Exception:
+        raise RuntimeError("MongoDB connection failed")
+    yield
+    await client.close()
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
